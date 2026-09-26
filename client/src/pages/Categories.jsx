@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api } from '../api';
 
-const SUGGESTED = ['#7c5cff', '#3fa7ff', '#2ed47a', '#ffb547', '#ff5c8a', '#00c2c7', '#e07bff', '#9aa4b2'];
+// Colour-blind-safe steps for the dark surface (dataviz reference palette).
+const SUGGESTED = ['#3987e5', '#d95926', '#199e70', '#9085e9', '#c98500', '#d55181', '#008300', '#e66767'];
 
 export default function Categories() {
   const [cats, setCats] = useState([]);

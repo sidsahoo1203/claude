@@ -11,7 +11,15 @@ const { requireAuth } = require('./middleware/auth');
 function createApp() {
   const app = express();
   app.set('trust proxy', 1);
-  app.use(helmet());
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        // Only force HTTPS subresources when actually served over HTTPS (COOKIE_SECURE),
+        // so plain-HTTP use on a home network still works.
+        directives: { upgradeInsecureRequests: config.cookieSecure ? [] : null },
+      },
+    })
+  );
   app.use(cors({ origin: config.clientOrigin, credentials: true }));
   app.use(express.json({ limit: '100kb' }));
   app.use(cookieParser());
@@ -39,14 +47,27 @@ function createApp() {
   app.use('/api/reflections', require('./routes/reflections'));
   app.use('/api/reviews', require('./routes/reviews'));
   app.use('/api/letters', require('./routes/letters'));
+  app.use('/api/analytics', require('./routes/analytics'));
+  app.use('/api/export', require('./routes/export'));
 
   app.use('/api', (req, res) => res.status(404).json({ error: 'Not found' }));
 
   // In production the built client is served from the same origin.
   const dist = path.join(__dirname, '..', '..', 'client', 'dist');
   if (config.env === 'production' && fs.existsSync(dist)) {
-    app.use(express.static(dist));
-    app.get('*', (req, res) => res.sendFile(path.join(dist, 'index.html')));
+    app.use(
+      express.static(dist, {
+        setHeaders(res, file) {
+          // Hashed build assets never change; the shell, manifest and service worker must revalidate.
+          if (file.includes(`${path.sep}assets${path.sep}`)) res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+          else res.setHeader('Cache-Control', 'no-cache');
+        },
+      })
+    );
+    app.get('*', (req, res) => {
+      res.setHeader('Cache-Control', 'no-cache');
+      res.sendFile(path.join(dist, 'index.html'));
+    });
   }
 
   app.use(errorHandler);

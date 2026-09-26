@@ -1158,3 +1158,152 @@ a.cal-day:hover {
   line-height: 1.7;
   font-family: Georgia, 'Iowan Old Style', 'Times New Roman', serif;
 }
+
+/* ---------- Phase 4 ---------- */
+.chart-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.chart-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.chart-head h2 {
+  margin-bottom: 0.15rem;
+}
+.chart-box {
+  position: relative;
+  height: 260px;
+}
+@media (min-width: 640px) {
+  .chart-box {
+    height: 300px;
+  }
+}
+.chart-empty {
+  padding: 2rem 0;
+  text-align: center;
+}
+.small-tabs {
+  flex-wrap: nowrap;
+}
+.small-tabs button {
+  min-width: 0;
+  white-space: nowrap;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.82rem;
+}
+.data-table summary {
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+.data-table[open] summary {
+  margin-bottom: 0.5rem;
+}
+
+.heatmap-scroll {
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+}
+.heatmap svg {
+  display: block;
+}
+.hm-label {
+  fill: var(--muted);
+  font-size: 9px;
+}
+.heatmap rect {
+  cursor: pointer;
+}
+.heatmap-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+.hm-readout {
+  min-height: 1.2em;
+}
+.hm-legend {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.hm-swatch {
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+}
+.hm-legend .muted {
+  margin: 0 0.25rem;
+}
+
+.insights-placeholder {
+  border-style: dashed;
+  background: transparent;
+  box-shadow: none;
+}
+
+.export-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+@media (min-width: 640px) {
+  .export-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.export-option {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+  color: var(--text);
+  padding: 0.9rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.03);
+}
+.export-option:hover {
+  border-color: var(--accent);
+  background: rgba(139, 123, 255, 0.08);
+}
+.export-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #fff;
+}
+.code,
+code {
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+}
+.code {
+  margin: 0;
+  padding: 0.7rem 0.9rem;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--border);
+  overflow-x: auto;
+}
+code {
+  background: rgba(255, 255, 255, 0.07);
+  padding: 0.05rem 0.35rem;
+  border-radius: 4px;
+}
+.pre-wrap {
+  white-space: pre-wrap;
+}

@@ -9,6 +9,7 @@
     "build": "npm --prefix client run build",
     "start": "NODE_ENV=production npm --prefix server start",
     "test": "npm --prefix server test",
-    "set-password": "npm --prefix server run set-password"
+    "set-password": "npm --prefix server run set-password",
+    "backup": "npm --prefix server run backup"
   }
 }

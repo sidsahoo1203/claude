@@ -4,17 +4,22 @@ import { api } from '../api';
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [status, setStatus] = useState('loading'); // loading | in | out
+  const [status, setStatus] = useState('loading'); // loading | in | out | offline
 
-  useEffect(() => {
+  const check = useCallback(() => {
+    setStatus('loading');
     api
       .get('/auth/me')
       .then((r) => setStatus(r.authenticated ? 'in' : 'out'))
-      .catch(() => setStatus('out'));
+      .catch((e) => setStatus(e.status === 0 ? 'offline' : 'out'));
+  }, []);
+
+  useEffect(() => {
+    check();
     const onExpired = () => setStatus('out');
     window.addEventListener('auth:expired', onExpired);
     return () => window.removeEventListener('auth:expired', onExpired);
-  }, []);
+  }, [check]);
 
   const login = useCallback(async (password) => {
     await api.post('/auth/login', { password });
@@ -26,7 +31,7 @@ export function AuthProvider({ children }) {
     setStatus('out');
   }, []);
 
-  return <AuthContext.Provider value={{ status, login, logout }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ status, login, logout, retry: check }}>{children}</AuthContext.Provider>;
 }
 
 export const useAuth = () => useContext(AuthContext);

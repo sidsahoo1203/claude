@@ -8,6 +8,8 @@ export const NAV = [
   { to: '/reflection', label: 'Reflect', icon: '✎' },
   { to: '/week', label: 'Week', icon: '◫' },
   { to: '/letters', label: 'Letters', icon: '✉' },
+  { to: '/analytics', label: 'Analytics', icon: '◔' },
   { to: '/stop-doing', label: 'Stop Doing', icon: '⊘' },
   { to: '/categories', label: 'Categories', icon: '◍' },
+  { to: '/export', label: 'Export', icon: '⇩' },
 ];

@@ -43,6 +43,12 @@ only added to.
 - Letters: fully immutable; the body is never returned (list, detail, export) before `unlocksAt`
   (00:00 APP_TZ on the unlock date, which must be after today).
 - Stop Doing: add, resolve (one-way), never delete; relapses = blocks linked to the item.
+- Analytics are pre-aggregated with MongoDB pipelines in `server/src/services/analytics.js` /
+  `history.js`; JS only fills empty buckets. Chart colours follow the category (entity), never rank.
+  Default category colours are the dataviz reference palette's dark steps in a CVD-validated order.
+- Export: JSON never includes sealed letter bodies; CSV cells are formula-injection safe.
+- PWA: `client/public/sw.js` caches the app shell only, never `/api/*`. Bump `VERSION` when the
+  shell file list changes.
 
 ## Structure
 
@@ -58,13 +64,15 @@ server/                               Express + Mongoose API (CommonJS)
   src/models/                         one file per collection
   src/routes/                         one router per feature
   src/services/                       read models / aggregations (day grid, dashboard, analytics…)
-  scripts/                            set-password.js, backup.js
+  scripts/                            set-password.js, backup.js (mongodump → backups/<APP_TZ stamp>)
   tests/                              Jest + Supertest + mongodb-memory-server, fake clock via setIST()
 client/                               React + Vite SPA (ESM), vanilla CSS
   src/api.js                          fetch wrapper (cookies)
   src/context/                        AuthContext, ClockContext (server time)
   src/components/, src/pages/         UI; mobile first
+  src/components/charts/              Chart.js setup/theme, SVG heatmap, data-table fallback
   src/styles/theme.css                dark glassmorphism tokens + components
+  public/                             manifest, icons, sw.js
 ```
 
 ## Working conventions

@@ -4,7 +4,7 @@ A private, single-user web app for logging how every hour of your day is spent, 
 and staying honest over the long term. **Once something is logged it can never be edited or
 deleted, only added to.** You can append notes, but you can't change what you logged.
 
-- Client: React + Vite, React Router, vanilla CSS (dark glassmorphism, mobile first)
+- Client: React + Vite, React Router, Chart.js, vanilla CSS (dark glassmorphism, mobile first), installable PWA
 - Server: Node.js + Express + Mongoose, MongoDB (local or Atlas)
 - Day boundaries use `Asia/Kolkata` (`APP_TZ`), decided by the server's clock, never the device's.
 
@@ -18,7 +18,7 @@ full design (schemas and API routes).
 | 1 | Setup, auth, categories, 24-hour logging grid (locking, notes, late window, timezone) | ✅ done |
 | 2 | Dashboard & goals, plan vs actual, calendar, Stop Doing list | ✅ done |
 | 3 | End-of-day reflection, weekly review, letters to future self | ✅ done |
-| 4 | Analytics, export, backup script, PWA | ⏳ next |
+| 4 | Analytics, export, backup script, PWA | ✅ done |
 
 ## Requirements
 
@@ -78,6 +78,40 @@ npm start            # Express serves the API and the built client on PORT
 ```
 
 Serve it over HTTPS (reverse proxy) so the session cookie is `Secure`.
+
+## Install on your phone (PWA)
+
+The app is a Progressive Web App (manifest, icons, and a service worker that caches the app shell).
+Browsers only allow installing, and only run the service worker, on **HTTPS** (or `localhost`), so:
+
+1. Run it in production mode (`npm run build && npm start`) behind HTTPS. Options: a reverse proxy
+   with a certificate (Caddy, nginx), a host like Render or Railway, or a tunnel (Cloudflare Tunnel,
+   Tailscale Funnel). Set `CLIENT_ORIGIN` to that URL and `COOKIE_SECURE=true`.
+2. Open the URL on your phone. **Android/Chrome**: menu → *Install app*. **iPhone/Safari**: Share →
+   *Add to Home Screen*.
+
+Offline, the installed app still opens and says you're offline. Logging needs the server's clock,
+so it only works online. Your hours stay open for the logging window, so nothing is lost.
+API responses are never cached.
+
+## Backups & export
+
+```bash
+npm run backup     # mongodump → backups/YYYY-MM-DD_HH-mm-ss/ (timestamp in APP_TZ)
+```
+
+Needs [MongoDB Database Tools](https://www.mongodb.com/docs/database-tools/installation/)
+(`mongodump`) on your PATH. It works with local MongoDB and with Atlas (it uses `MONGODB_URI`).
+A backup contains everything, including sealed letters. To restore it:
+
+```bash
+mongorestore --uri="$MONGODB_URI" backups/<folder>
+```
+
+In the app, **More → Export** downloads:
+- **JSON** of everything. Sealed letters are included without their text until they open.
+- **CSV** of all logged hours (one row per hour, with notes). Cells are protected against
+  spreadsheet formula injection.
 
 ## Tests
 
@@ -154,3 +188,10 @@ returns 405**, because there are no edit or delete endpoints.
 | `GET /api/reviews/week?start=YYYY-MM-DD` | Weekly review for the week containing `start`: totals, categories, each day, relapses, reflections |
 | `GET /api/letters` · `GET /api/letters/:id` | Titles and dates only; the body appears on `/:id` only once the letter is unlocked |
 | `POST /api/letters` | Seal a letter with `{ title, body, unlockDate }` |
+| `GET /api/analytics/categories?period=day\|week\|month&from&to` | Hours per category per bucket, with empty buckets filled in |
+| `GET /api/analytics/heatmap?year=YYYY` | Hours logged, alignment % and unaccounted hours for every day of the year |
+| `GET /api/analytics/energy-by-hour?from&to` | Average energy for each hour of the day (default: last 90 days) |
+| `GET /api/analytics/sleep?from&to` | Per night (noon to noon): hours asleep, bedtime and wake time from the Sleep category |
+| `GET /api/analytics/week-compare?a&b` | Hours per category for week A vs week B (default: this week vs last week) |
+| `GET /api/analytics/streaks` | Current and longest streak |
+| `GET /api/export/json` · `GET /api/export/blocks.csv` | Downloads |

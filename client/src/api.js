@@ -8,12 +8,17 @@ export class ApiError extends Error {
 }
 
 async function request(method, path, body) {
-  const res = await fetch(`/api${path}`, {
+  let res;
+  try {
+    res = await fetch(`/api${path}`, {
     method,
     credentials: 'include',
     headers: body ? { 'Content-Type': 'application/json' } : undefined,
     body: body ? JSON.stringify(body) : undefined,
-  });
+    });
+  } catch {
+    throw new ApiError(0, "You're offline. Nothing is lost; try again when you're connected.");
+  }
   const data = res.headers.get('content-type')?.includes('application/json') ? await res.json() : null;
   if (!res.ok) {
     if (res.status === 401 && !path.startsWith('/auth/')) window.dispatchEvent(new Event('auth:expired'));
