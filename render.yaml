@@ -1,0 +1,32 @@
+# Render Blueprint for the Hourglass API (the part GitHub Pages can't host).
+# Render dashboard → New → Blueprint → pick this repo. You'll be asked for the values marked sync: false.
+services:
+  - type: web
+    name: hourglass-api
+    runtime: node
+    plan: free
+    rootDir: server
+    buildCommand: npm ci --omit=dev
+    startCommand: npm start
+    healthCheckPath: /api/auth/me
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: APP_TZ
+        value: Asia/Kolkata
+      - key: LOG_WINDOW_HOURS
+        value: "12"
+      # The GitHub Pages site (origin only, no path). Add more origins comma-separated.
+      - key: CLIENT_ORIGIN
+        value: https://sidsahoo1203.github.io
+      # Client and API are on different sites, so the session cookie must be SameSite=None; Secure.
+      - key: COOKIE_SAMESITE
+        value: none
+      - key: JWT_SECRET
+        generateValue: true
+      # MongoDB Atlas connection string (mongodb+srv://…).
+      - key: MONGODB_URI
+        sync: false
+      # From: npm run set-password -- --print
+      - key: PASSWORD_HASH
+        sync: false

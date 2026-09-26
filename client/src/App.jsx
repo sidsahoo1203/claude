@@ -25,6 +25,27 @@ const Analytics = lazy(() => import('./pages/Analytics'));
 export default function App() {
   const { status, retry } = useAuth();
   if (status === 'loading') return <div className="splash">⧗</div>;
+  if (status === 'nobackend') {
+    return (
+      <div className="login-wrap">
+        <div className="login glass stack">
+          <div className="brand big">
+            <span className="brand-mark">⧗</span>
+            <span>Hourglass</span>
+          </div>
+          <p>This page has no API server connected yet.</p>
+          <p className="muted small">
+            The app's rules (locked hours, the logging window, sealed letters) are enforced by its Node.js server, which a
+            static host like GitHub Pages can't run. Deploy the server (see the README's "Hosting" section) and set the
+            repository variable <code>API_URL</code> to its address, then redeploy.
+          </p>
+          <button className="btn" onClick={retry}>
+            Try again
+          </button>
+        </div>
+      </div>
+    );
+  }
   if (status === 'offline') {
     return (
       <div className="login-wrap">

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { API_BASE } from '../api';
 
 export default function Export() {
   const [downloading, setDownloading] = useState('');
@@ -13,7 +14,7 @@ export default function Export() {
         <h2>Download your data</h2>
         <p className="muted small">Your data stays yours. Downloads include everything you've recorded.</p>
         <div className="export-grid">
-          <a className="export-option" href="/api/export/json" download onClick={() => setDownloading('json')}>
+          <a className="export-option" href={`${API_BASE}/export/json`} download onClick={() => setDownloading('json')}>
             <span className="export-icon">{'{ }'}</span>
             <span className="stack tight">
               <strong>Everything (JSON)</strong>
@@ -23,7 +24,7 @@ export default function Export() {
               </span>
             </span>
           </a>
-          <a className="export-option" href="/api/export/blocks.csv" download onClick={() => setDownloading('csv')}>
+          <a className="export-option" href={`${API_BASE}/export/blocks.csv`} download onClick={() => setDownloading('csv')}>
             <span className="export-icon">CSV</span>
             <span className="stack tight">
               <strong>Time logs (CSV)</strong>

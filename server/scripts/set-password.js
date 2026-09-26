@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Hashes a new password with bcrypt and writes it to server/.env as PASSWORD_HASH.
 // Also creates JWT_SECRET if missing. Existing sessions are invalidated.
+// `npm run set-password -- --print` only prints the hash (for hosting dashboards).
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
@@ -48,6 +49,12 @@ function setVar(content, key, value) {
 async function main() {
   const password = await readPassword();
   if (!password || password.length < 8) throw new Error('Password must be at least 8 characters');
+
+  // --print: just output the hash (for a hosting dashboard's PASSWORD_HASH), don't touch .env.
+  if (process.argv.includes('--print')) {
+    console.log(`PASSWORD_HASH=${await bcrypt.hash(password, 12)}`);
+    return;
+  }
 
   let env = fs.existsSync(ENV_PATH)
     ? fs.readFileSync(ENV_PATH, 'utf8')

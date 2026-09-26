@@ -20,7 +20,7 @@ function createApp() {
       },
     })
   );
-  app.use(cors({ origin: config.clientOrigin, credentials: true }));
+  app.use(cors({ origin: config.clientOrigins, credentials: true }));
   app.use(express.json({ limit: '100kb' }));
   app.use(cookieParser());
 
@@ -28,6 +28,11 @@ function createApp() {
   app.use('/api', (req, res, next) => {
     if (['PUT', 'PATCH', 'DELETE'].includes(req.method)) {
       return res.status(405).json({ error: 'Logged data is permanent: it can never be edited or deleted, only added to.' });
+    }
+    // CSRF: every write must carry a header an HTML form can't set. Cross-site, that forces a
+    // CORS preflight, which only CLIENT_ORIGIN passes.
+    if (req.method !== 'GET' && req.method !== 'HEAD' && req.method !== 'OPTIONS' && req.get('X-Requested-With') !== 'hourglass') {
+      return res.status(403).json({ error: 'Missing X-Requested-With header' });
     }
     next();
   });

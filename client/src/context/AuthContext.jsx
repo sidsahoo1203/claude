@@ -4,14 +4,14 @@ import { api } from '../api';
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [status, setStatus] = useState('loading'); // loading | in | out | offline
+  const [status, setStatus] = useState('loading'); // loading | in | out | offline | nobackend
 
   const check = useCallback(() => {
     setStatus('loading');
     api
       .get('/auth/me')
       .then((r) => setStatus(r.authenticated ? 'in' : 'out'))
-      .catch((e) => setStatus(e.status === 0 ? 'offline' : 'out'));
+      .catch((e) => setStatus(e.status === 0 ? 'offline' : e.status === -1 || e.status === 404 || e.status === 405 ? 'nobackend' : 'out'));
   }, []);
 
   useEffect(() => {

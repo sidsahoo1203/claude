@@ -1,7 +1,10 @@
 // Hourglass service worker: caches the app shell so the installed app opens offline.
 // API responses are never cached, so private data never sits in the cache and nothing is stale.
-const VERSION = 'hourglass-v1';
-const SHELL = ['/', '/index.html', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png', '/favicon-32.png'];
+const VERSION = 'hourglass-v2';
+// Paths are relative to the worker's scope, so this works at / and under a subpath (GitHub Pages).
+const BASE = new URL('./', self.location).pathname;
+const SHELL = ['', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'favicon-32.png'].map((p) => BASE + p);
+const INDEX = `${BASE}index.html`;
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -24,7 +27,7 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
-  if (request.method !== 'GET' || url.origin !== self.location.origin || url.pathname.startsWith('/api/')) return;
+  if (request.method !== 'GET' || url.origin !== self.location.origin || url.pathname.startsWith(`${BASE}api/`) || url.pathname.startsWith('/api/')) return;
 
   // Pages: network first (so updates arrive), fall back to the cached shell offline.
   if (request.mode === 'navigate') {
@@ -32,10 +35,10 @@ self.addEventListener('fetch', (event) => {
       fetch(request)
         .then((res) => {
           const copy = res.clone();
-          caches.open(VERSION).then((c) => c.put('/index.html', copy));
+          caches.open(VERSION).then((c) => c.put(INDEX, copy));
           return res;
         })
-        .catch(() => caches.match('/index.html'))
+        .catch(() => caches.match(INDEX))
     );
     return;
   }

@@ -52,8 +52,9 @@ cp client/.env.example client/.env
 | `MONGODB_URI` | `mongodb://localhost:27017/timelog` | Local or Atlas URI |
 | `APP_TZ` | `Asia/Kolkata` | Time zone for "today" and hour blocks |
 | `LOG_WINDOW_HOURS` | `12` | How long after an hour ends it can still be logged |
-| `CLIENT_ORIGIN` | `http://localhost:5173` | Only origin allowed by CORS |
+| `CLIENT_ORIGIN` | `http://localhost:5173` | Origins allowed by CORS (comma-separated) |
 | `COOKIE_SECURE` | `false` (`true` in production) | Send the session cookie only over HTTPS |
+| `COOKIE_SAMESITE` | `strict` | Use `none` when the client is hosted on another site, such as GitHub Pages. This also forces `Secure`. |
 | `PASSWORD_HASH` | — | bcrypt hash, set by `npm run set-password` |
 | `JWT_SECRET` | — | Created by `npm run set-password` if missing |
 
@@ -91,14 +92,54 @@ npm start            # Express serves the API and the built client on PORT
 
 Serve it over HTTPS (reverse proxy) so the session cookie is `Secure`.
 
+## Hosting: GitHub Pages + a free API host
+
+GitHub Pages only serves static files. It can host the **client**, but it can't run the **API**,
+and the API is where every rule is enforced (locked hours, the logging window, sealed letters).
+So the app is hosted in two parts:
+
+```
+https://sidsahoo1203.github.io/claude/   ← client (GitHub Pages, deployed by .github/workflows/pages.yml)
+            │  fetch with credentials, CORS, SameSite=None cookie, X-Requested-With header
+            ▼
+https://hourglass-api.onrender.com       ← API (Render free web service, render.yaml)
+            ▼
+MongoDB Atlas (free M0 cluster)
+```
+
+One-time setup:
+
+1. **Database:** create a free cluster on [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
+   Add a database user, allow access from anywhere (`0.0.0.0/0`, needed for Render's free tier),
+   and copy the `mongodb+srv://…` connection string. Put `/timelog` before the `?` in it.
+2. **Password hash:** run `npm run set-password -- --print` locally and copy the `PASSWORD_HASH` value.
+3. **API on Render:** in the [Render dashboard](https://dashboard.render.com), go to **New → Blueprint**
+   and pick this repo. It reads `render.yaml`. Paste `MONGODB_URI` and `PASSWORD_HASH` when asked.
+   When it's live, open `https://<your-service>.onrender.com/api/auth/me`; it should say
+   `{"authenticated":false}`.
+4. **Point the client at it:** on GitHub, go to **Settings → Secrets and variables → Actions → Variables**
+   and add a new repository variable `API_URL` = `https://<your-service>.onrender.com` (no trailing slash).
+5. **Turn on Pages:** go to **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+6. Re-run the **Deploy client to GitHub Pages** workflow (Actions tab), or push to `main`.
+   Then open `https://sidsahoo1203.github.io/claude/`.
+
+Notes:
+- Every push to `main` runs the server tests, then builds and deploys the client.
+- Render's free tier sleeps after ~15 minutes idle, so the first request after that takes ~30–60s.
+- Until `API_URL` is set, the Pages site shows "This page has no API server connected yet".
+- The phone app install works from the Pages URL, because it's HTTPS.
+- Alternatively, skip Pages and serve everything from one Node host (`npm run build && npm start`),
+  with the default `COOKIE_SAMESITE=strict`.
+
 ## Install on your phone (PWA)
 
 The app is a Progressive Web App (manifest, icons, and a service worker that caches the app shell).
 Browsers only allow installing, and only run the service worker, on **HTTPS** (or `localhost`), so:
 
-1. Run it in production mode (`npm run build && npm start`) behind HTTPS. Options: a reverse proxy
-   with a certificate (Caddy, nginx), a host like Render or Railway, or a tunnel (Cloudflare Tunnel,
-   Tailscale Funnel). Set `CLIENT_ORIGIN` to that URL and `COOKIE_SECURE=true`.
+1. Use the GitHub Pages URL from the Hosting section above, or run it in production mode
+   (`npm run build && npm start`) behind HTTPS: a reverse proxy with a certificate (Caddy, nginx),
+   a host like Render or Railway, or a tunnel (Cloudflare Tunnel, Tailscale Funnel). Set
+   `CLIENT_ORIGIN` to that URL and `COOKIE_SECURE=true`.
 2. Open the URL on your phone. **Android/Chrome**: menu → *Install app*. **iPhone/Safari**: Share →
    *Add to Home Screen*.
 

@@ -35,7 +35,7 @@ function setIST(iso) {
 
 async function loggedInAgent() {
   const app = createApp();
-  const agent = request.agent(app);
+  const agent = request.agent(app).set('X-Requested-With', 'hourglass');
   const res = await agent.post('/api/auth/login').send({ password: process.env.TEST_PASSWORD });
   if (res.status !== 200) throw new Error(`login failed: ${res.status}`);
   return agent;

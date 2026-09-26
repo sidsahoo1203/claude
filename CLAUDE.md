@@ -17,6 +17,9 @@ only added to.
    - `server/src/app.js` refuses every `PUT`/`PATCH`/`DELETE` under `/api` with 405. Do not add
      edit or delete endpoints; state changes are `POST /resource/:id/<action>`.
    - Mark locked schema fields `immutable: true` as a second layer.
+   - Every non-GET `/api` request must send `X-Requested-With: hourglass` (CSRF guard, needed
+     because the Pages deployment uses a `SameSite=None` cookie). `client/src/api.js` adds it;
+     tests use `request.agent(app).set('X-Requested-With', 'hourglass')`.
 3. **Honesty.** Make it hard to fake or reconstruct data after the fact. Server sets all
    timestamps (`createdAt`, `loggedAt`, note times, `lateMinutes`); client-supplied values for them
    are ignored. Late logging is recorded, not hidden.
@@ -50,10 +53,22 @@ only added to.
 - PWA: `client/public/sw.js` caches the app shell only, never `/api/*`. Bump `VERSION` when the
   shell file list changes.
 
+## Deployment
+
+- Branch: work directly on `main` (the only branch). Pushing `main` runs
+  `.github/workflows/pages.yml`: server tests → client build (`VITE_BASE=/<repo>/`,
+  `VITE_API_URL=${{ vars.API_URL }}`, `404.html` SPA fallback) → GitHub Pages.
+- The API can't run on Pages; it's deployed separately (`render.yaml`, Atlas) with
+  `COOKIE_SAMESITE=none` and `CLIENT_ORIGIN=https://sidsahoo1203.github.io`.
+- Client code must not hardcode `/api` or root-absolute paths: use `API_BASE` from `api.js` and
+  `import.meta.env.BASE_URL`; the manifest and `sw.js` use paths relative to their scope.
+
 ## Structure
 
 ```
 CLAUDE.md, README.md, docs/PLAN.md    principles, setup, original design plan
+.github/workflows/pages.yml           test + build + deploy client to GitHub Pages
+render.yaml                           Render blueprint for the API
 backups/                              mongodump output (npm run backup)
 server/                               Express + Mongoose API (CommonJS)
   src/app.js                          app factory (helmet, CORS, 405 guard, routers)

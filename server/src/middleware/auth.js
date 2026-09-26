@@ -15,7 +15,7 @@ function issueSession(res) {
   const token = jwt.sign({ pv: passwordFingerprint() }, config.jwtSecret, { expiresIn: '7d' });
   res.cookie(COOKIE, token, {
     httpOnly: true,
-    sameSite: 'strict',
+    sameSite: config.cookieSameSite,
     secure: config.cookieSecure,
     maxAge: MAX_AGE_MS,
     path: '/',
@@ -23,7 +23,7 @@ function issueSession(res) {
 }
 
 function clearSession(res) {
-  res.clearCookie(COOKIE, { httpOnly: true, sameSite: 'strict', secure: config.cookieSecure, path: '/' });
+  res.clearCookie(COOKIE, { httpOnly: true, sameSite: config.cookieSameSite, secure: config.cookieSecure, path: '/' });
 }
 
 function isAuthenticated(req) {
