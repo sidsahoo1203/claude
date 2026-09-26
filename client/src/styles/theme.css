@@ -740,3 +740,227 @@ textarea {
   font-size: 2rem;
   color: var(--muted);
 }
+
+/* ---------- Phase 2 ---------- */
+.grow-title {
+  flex: 1;
+  margin: 0;
+}
+.center-title {
+  flex: 1;
+  text-align: center;
+  margin: 0 !important;
+}
+@media (min-width: 900px) {
+  .stats-5 {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+.stats-5 > :last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+@media (min-width: 640px) {
+  .stats-5 > :last-child:nth-child(odd) {
+    grid-column: auto;
+  }
+}
+
+.linklike {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: var(--accent-2);
+  cursor: pointer;
+}
+.link-row {
+  color: var(--text);
+}
+.link-row:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+.more-icon {
+  display: inline-block;
+  width: 1.5rem;
+  color: var(--muted);
+}
+
+/* goal statements */
+.statement {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.statement-goal {
+  border-color: rgba(139, 123, 255, 0.35);
+  background: linear-gradient(135deg, rgba(139, 123, 255, 0.14), rgba(255, 255, 255, 0.04));
+}
+.statement-text {
+  font-size: 1.15rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+.statement-contribution .statement-text {
+  font-size: 1rem;
+  color: #cfd3e6;
+}
+.history {
+  border-top: 1px solid var(--border);
+  padding-top: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+/* plan line inside hour rows */
+.hour-plan {
+  --plan: var(--muted);
+  grid-column: 2 / 4;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+  border-top: 1px dashed var(--border);
+  padding-top: 0.3rem;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.plan-dot {
+  flex: none;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 2px;
+  background: var(--plan);
+}
+.hour-plan.adh-hit b {
+  color: var(--good);
+}
+.hour-plan.adh-miss b {
+  color: var(--bad);
+}
+.hour-row.status-future .hour-plan {
+  color: var(--text);
+}
+
+/* plan editor */
+.tabs {
+  flex: none;
+}
+.tabs button {
+  min-width: 90px;
+}
+.plan-row.locked {
+  opacity: 0.55;
+}
+.plan-row.selected {
+  border-color: var(--accent);
+  background: rgba(139, 123, 255, 0.15);
+}
+.action-sheet {
+  position: sticky;
+  bottom: calc(4.5rem + env(safe-area-inset-bottom));
+  z-index: 15;
+  border-radius: var(--radius);
+  padding: 0.85rem;
+  background: rgba(22, 25, 44, 0.94);
+}
+@media (min-width: 760px) {
+  .action-sheet {
+    bottom: 1rem;
+  }
+}
+
+/* calendar */
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.3rem;
+}
+.cal-head {
+  margin-bottom: 0.3rem;
+}
+.cal-head span {
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.cal-day {
+  --cat: transparent;
+  position: relative;
+  min-height: 64px;
+  border-radius: 8px;
+  padding: 0.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+  color: var(--text);
+  background: color-mix(in srgb, var(--cat) 22%, rgba(255, 255, 255, 0.03));
+  border: 1px solid var(--border);
+  border-bottom: 3px solid var(--cat);
+  overflow: hidden;
+}
+a.cal-day:hover {
+  border-color: var(--border-strong);
+}
+.cal-day.today {
+  box-shadow: 0 0 0 2px var(--accent);
+}
+.cal-day.future,
+.cal-day.untracked {
+  opacity: 0.35;
+  background: transparent;
+}
+.cal-num {
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+.cal-hours {
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.cal-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.3rem;
+  font-size: 0.65rem;
+  color: var(--muted);
+}
+.cal-gap {
+  color: var(--bad);
+}
+.cal-day.has-gap {
+  border-color: rgba(255, 92, 122, 0.35);
+}
+@media (min-width: 640px) {
+  .cal-day {
+    min-height: 84px;
+    padding: 0.45rem;
+  }
+  .cal-meta {
+    font-size: 0.75rem;
+  }
+}
+.legend {
+  text-align: center;
+}
+
+/* stop doing */
+.relapse-count {
+  min-width: 2.2rem;
+  text-align: center;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+}
+.relapse-count.bad {
+  color: var(--bad);
+  background: rgba(255, 92, 122, 0.12);
+}

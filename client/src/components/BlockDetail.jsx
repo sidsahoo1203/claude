@@ -37,6 +37,14 @@ export default function BlockDetail({ block: initial, onChanged }) {
             <dd>{block.stopDoingItem.title}</dd>
           </>
         )}
+        {initial.plan && (
+          <>
+            <dt>Planned</dt>
+            <dd>
+              {initial.plan.activity || '—'} ({initial.plan.category?.name})
+            </dd>
+          </>
+        )}
         <dt>Logged</dt>
         <dd>
           {formatInstant(block.loggedAt)} ({lateText(block.lateMinutes)})

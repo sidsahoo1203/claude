@@ -44,11 +44,12 @@ export default function Day() {
       {error && <p className="error">{error}</p>}
       {day && (
         <>
-          <div className="stats">
+          <div className="stats stats-5">
             <StatCard label="Hours logged" value={day.summary.logged} />
             <StatCard label="Unaccounted" value={day.summary.unaccounted} tone={day.summary.unaccounted ? 'bad' : undefined} />
             <StatCard label="Alignment" value={day.summary.alignmentPct == null ? '—' : `${day.summary.alignmentPct}%`} />
             <StatCard label="Avg energy" value={day.summary.avgEnergy ?? '—'} />
+            <StatCard label="Plan adherence" value={day.summary.adherencePct == null ? '—' : `${day.summary.adherencePct}%`} />
           </div>
           <section className="card glass">
             <HourGrid hours={day.hours.map((h) => ({ ...h, date }))} onSelect={select} />

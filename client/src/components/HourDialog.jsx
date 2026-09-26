@@ -8,7 +8,7 @@ export default function HourDialog({ hour, onClose, onChanged }) {
   const title = `${hourRange(hour.hour)}`;
   let body;
   if (hour.block) {
-    body = <BlockDetail block={{ ...hour.block, date: hour.date }} onChanged={onChanged} />;
+    body = <BlockDetail block={{ ...hour.block, date: hour.date, plan: hour.plan }} onChanged={onChanged} />;
   } else if (hour.status === 'open') {
     body = (
       <LogForm

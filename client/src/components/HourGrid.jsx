@@ -27,7 +27,7 @@ export default function HourGrid({ hours, onSelect, currentHour, showDate }) {
                 <span className="hour-main">
                   <span className="hour-activity">{b.activity}</span>
                   <span className="hour-meta">
-                    <span className="cat-chip">
+                    <span className="cat-chip" style={{ '--cat': b.category?.color }}>
                       <span className="dot" />
                       {b.category?.name}
                     </span>
@@ -44,6 +44,14 @@ export default function HourGrid({ hours, onSelect, currentHour, showDate }) {
                 </span>
               ) : (
                 <span className="hour-main hour-empty">{isNow ? 'In progress' : STATUS_TEXT[h.status]}</span>
+              )}
+              {h.plan && (
+                <span className={`hour-plan adh-${h.adherence || 'pending'}`} style={{ '--plan': h.plan.category?.color }}>
+                  <span className="plan-dot" />
+                  Plan: {h.plan.activity || h.plan.category?.name}
+                  {h.adherence === 'hit' && <b> ✓</b>}
+                  {h.adherence === 'miss' && <b> ✗</b>}
+                </span>
               )}
               <span className="hour-lock" aria-hidden>
                 {b ? '🔒' : h.status === 'unaccounted' ? '⦸' : ''}

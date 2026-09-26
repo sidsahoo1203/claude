@@ -34,7 +34,9 @@ export default function Today() {
   useEffect(() => {
     if (!day || scrolled.current) return;
     scrolled.current = true;
-    document.querySelector('.hour-row.is-now, .hour-row.status-open')?.scrollIntoView({ block: 'center' });
+    const target =
+      document.querySelector('.hour-row.is-now') || [...document.querySelectorAll('.hour-row.status-open')].pop();
+    target?.scrollIntoView({ block: 'center' });
   }, [day]);
 
   if (error) return <p className="error">{error}</p>;
@@ -48,11 +50,16 @@ export default function Today() {
         <span className="muted">{formatDate(day.date)}</span>
       </div>
 
-      <div className="stats">
+      <div className="stats stats-5">
         <StatCard label="Hours logged" value={s.logged} />
         <StatCard label="Unaccounted" value={s.unaccounted} tone={s.unaccounted ? 'bad' : undefined} />
         <StatCard label="Waiting to log" value={s.open} tone={s.open ? 'warn' : undefined} />
         <StatCard label="Alignment" value={s.alignmentPct == null ? '—' : `${s.alignmentPct}%`} />
+        <StatCard
+          label="Plan adherence"
+          value={s.adherencePct == null ? '—' : `${s.adherencePct}%`}
+          hint={s.planned ? `${s.planHits}/${s.planDecided} so far` : 'no plan yet'}
+        />
       </div>
 
       {earlier.length > 0 && (

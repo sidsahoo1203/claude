@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { createdOnly } = require('../lib/time');
 const { immutablePlugin } = require('../lib/immutable');
 const noteSchema = require('./note');
 
@@ -18,7 +19,7 @@ const timeBlockSchema = new mongoose.Schema(
     lateMinutes: { type: Number, required: true, min: 0, immutable: true },
     notes: { type: [noteSchema], default: [] },
   },
-  { timestamps: { createdAt: true, updatedAt: false } }
+  { timestamps: createdOnly }
 );
 
 timeBlockSchema.index({ date: 1, hour: 1 }, { unique: true });

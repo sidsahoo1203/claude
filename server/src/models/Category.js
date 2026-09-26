@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { createdOnly } = require('../lib/time');
 const { immutablePlugin } = require('../lib/immutable');
 
 // Categories are never deleted so old logs keep their category; they can only be archived.
@@ -10,7 +11,7 @@ const categorySchema = new mongoose.Schema(
     archived: { type: Boolean, default: false },
     archivedAt: { type: Date, default: null },
   },
-  { timestamps: { createdAt: true, updatedAt: false } }
+  { timestamps: createdOnly }
 );
 
 categorySchema.pre('validate', function (next) {

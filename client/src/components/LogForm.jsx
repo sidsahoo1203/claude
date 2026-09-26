@@ -4,13 +4,15 @@ import { ALIGNMENT, formatDate, formatInstant, hourRange } from '../format';
 
 export default function LogForm({ hour, onSaved, onCancel }) {
   const [categories, setCategories] = useState([]);
-  const [form, setForm] = useState({ activity: '', category: '', energy: 3, alignment: 'neutral' });
+  const [stopItems, setStopItems] = useState([]);
+  const [form, setForm] = useState({ activity: '', category: '', energy: 3, alignment: 'neutral', stopDoingItem: '' });
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     api.get('/categories').then(setCategories).catch((e) => setError(e.message));
+    api.get('/stop-doing').then(setStopItems).catch(() => {});
   }, []);
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target ? e.target.value : e }));
@@ -20,7 +22,13 @@ export default function LogForm({ hour, onSaved, onCancel }) {
     setSaving(true);
     setError('');
     try {
-      await api.post('/blocks', { date: hour.date, hour: hour.hour, ...form, energy: Number(form.energy) });
+      await api.post('/blocks', {
+        date: hour.date,
+        hour: hour.hour,
+        ...form,
+        energy: Number(form.energy),
+        stopDoingItem: form.stopDoingItem || null,
+      });
       onSaved();
     } catch (e) {
       setError(e.message);
@@ -31,6 +39,7 @@ export default function LogForm({ hour, onSaved, onCancel }) {
   }
 
   const cat = categories.find((c) => c._id === form.category);
+  const relapse = stopItems.find((i) => i._id === form.stopDoingItem);
 
   if (confirming) {
     return (
@@ -56,6 +65,12 @@ export default function LogForm({ hour, onSaved, onCancel }) {
           <dd>{form.energy} / 5</dd>
           <dt>Alignment</dt>
           <dd>{ALIGNMENT[form.alignment].label}</dd>
+          {relapse && (
+            <>
+              <dt>Relapse</dt>
+              <dd className="align-against">{relapse.title}</dd>
+            </>
+          )}
         </dl>
         {error && <p className="error">{error}</p>}
         <div className="row end">
@@ -132,6 +147,25 @@ export default function LogForm({ hour, onSaved, onCancel }) {
           ))}
         </div>
       </div>
+      {stopItems.length > 0 && (
+        <label className="field">
+          <span>Was this a Stop Doing relapse?</span>
+          <select value={form.stopDoingItem} onChange={set('stopDoingItem')}>
+            <option value="">No</option>
+            {stopItems.map((i) => (
+              <option key={i._id} value={i._id}>
+                {i.title}
+                {i.status === 'resolved' ? ' (resolved)' : ''}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
+      {hour.plan && (
+        <p className="muted small">
+          Planned: {hour.plan.activity || '—'} ({hour.plan.category?.name})
+        </p>
+      )}
       {error && <p className="error">{error}</p>}
       <div className="row end">
         <button type="button" className="btn ghost" onClick={onCancel}>

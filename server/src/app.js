@@ -31,6 +31,11 @@ function createApp() {
   const { days, blocks } = require('./routes/blocks');
   app.use('/api/days', days);
   app.use('/api/blocks', blocks);
+  app.use('/api/dashboard', require('./routes/dashboard'));
+  app.use('/api/goals', require('./routes/goals'));
+  app.use('/api/plans', require('./routes/plans'));
+  app.use('/api/calendar', require('./routes/calendar'));
+  app.use('/api/stop-doing', require('./routes/stopDoing'));
 
   app.use('/api', (req, res) => res.status(404).json({ error: 'Not found' }));
 

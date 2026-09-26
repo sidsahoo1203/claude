@@ -16,8 +16,8 @@ full design (schemas and API routes).
 | Phase | Scope | Status |
 |---|---|---|
 | 1 | Setup, auth, categories, 24-hour logging grid (locking, notes, late window, timezone) | ✅ done |
-| 2 | Dashboard & goals, plan vs actual, calendar, Stop Doing list | ⏳ next |
-| 3 | End-of-day reflection, weekly review, letters to future self | — |
+| 2 | Dashboard & goals, plan vs actual, calendar, Stop Doing list | ✅ done |
+| 3 | End-of-day reflection, weekly review, letters to future self | ⏳ next |
 | 4 | Analytics, export, backup script, PWA | — |
 
 ## Requirements
@@ -105,7 +105,19 @@ Tests freeze the server clock at specific Asia/Kolkata times to check the time r
 
 Hours from yesterday that are still inside the window appear under "Still open from yesterday".
 
-## API (Phase 1)
+### Definitions
+
+- **Alignment %** = hours logged "toward goal" ÷ hours logged.
+- **Plan adherence %** = planned hours done in the planned category ÷ planned hours already decided
+  (logged or unaccounted). An unaccounted planned hour counts as a miss.
+- **Streak** = consecutive days with zero unaccounted hours. Today counts while it has none so far.
+  Tracking starts on the day of your first logged hour; earlier days are "untracked".
+- **Plans** can be made for today and tomorrow. Every change is a new revision, and the latest one
+  wins. An hour's plan locks when the hour starts.
+- **Stop Doing**: items can be resolved (one-way) but never deleted. Linking a logged hour to an item
+  records a relapse, including relapses after the item was resolved, which are flagged.
+
+## API
 
 Every route except `/api/auth/*` requires the session cookie. **Every `PUT`/`PATCH`/`DELETE`
 returns 405**, because there are no edit or delete endpoints.
@@ -123,3 +135,10 @@ returns 405**, because there are no edit or delete endpoints.
 | `POST /api/blocks` | Log an open hour with `{ date, hour, activity, category, energy, alignment, stopDoingItem? }` |
 | `GET /api/blocks/:id` | A single block |
 | `POST /api/blocks/:id/notes` | Append a note with `{ text }` |
+| `GET /api/dashboard` | Latest goal and statement, today's summary and the streak |
+| `GET /api/goals` · `POST /api/goals` | Goal and contribution history; add a version with `{ kind: goal\|contribution, text }` |
+| `GET /api/plans/:date` | Each hour's current plan, its revision history and whether it's locked |
+| `POST /api/plans` · `POST /api/plans/bulk` | Add plan revisions for today or tomorrow: `{ date, hour \| hours[], activity, category }` or `{ …, cleared: true }` |
+| `GET /api/calendar?month=YYYY-MM` | Per day: hours logged, unaccounted hours, dominant category, alignment % |
+| `GET /api/stop-doing` · `GET /api/stop-doing/:id` | Items with relapse counts / one item with its relapse timeline |
+| `POST /api/stop-doing` · `POST /api/stop-doing/:id/resolve` | Add an item / resolve it (one-way) |

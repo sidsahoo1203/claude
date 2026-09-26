@@ -1,16 +1,15 @@
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useClock } from '../context/ClockContext';
 import { formatDate } from '../format';
-
-const NAV = [
-  { to: '/', label: 'Today', icon: '◷', end: true },
-  { to: '/categories', label: 'Categories', icon: '◍' },
-];
+import { NAV } from '../nav';
 
 export default function Layout() {
   const { logout } = useAuth();
   const clock = useClock();
+  const { pathname } = useLocation();
+  const secondaryActive = NAV.some((n) => !n.primary && pathname.startsWith(n.to)) || pathname === '/more';
+
   return (
     <div className="shell">
       <header className="topbar glass">
@@ -27,7 +26,7 @@ export default function Layout() {
         </nav>
         <div className="topbar-right">
           {clock && <span className="muted small hide-sm">{formatDate(clock.today)}</span>}
-          <button className="btn ghost small" onClick={logout}>
+          <button className="btn ghost small hide-sm" onClick={logout}>
             Log out
           </button>
         </div>
@@ -36,12 +35,16 @@ export default function Layout() {
         <Outlet />
       </main>
       <nav className="bottomnav glass">
-        {NAV.map((n) => (
+        {NAV.filter((n) => n.primary).map((n) => (
           <NavLink key={n.to} to={n.to} end={n.end}>
             <span className="icon">{n.icon}</span>
             <span>{n.label}</span>
           </NavLink>
         ))}
+        <NavLink to="/more" className={secondaryActive ? 'active' : ''}>
+          <span className="icon">⋯</span>
+          <span>More</span>
+        </NavLink>
       </nav>
     </div>
   );

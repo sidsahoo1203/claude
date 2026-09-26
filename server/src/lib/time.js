@@ -69,7 +69,11 @@ function datesBetween(from, to) {
   return out;
 }
 
+// Mongoose timestamp option: createdAt comes from the same (server) clock as everything else.
+const createdOnly = { createdAt: true, updatedAt: false, currentTime: () => new Date(clock()) };
+
 module.exports = {
+  createdOnly,
   setClock,
   now,
   todayStr,
