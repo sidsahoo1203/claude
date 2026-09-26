@@ -36,6 +36,9 @@ function createApp() {
   app.use('/api/plans', require('./routes/plans'));
   app.use('/api/calendar', require('./routes/calendar'));
   app.use('/api/stop-doing', require('./routes/stopDoing'));
+  app.use('/api/reflections', require('./routes/reflections'));
+  app.use('/api/reviews', require('./routes/reviews'));
+  app.use('/api/letters', require('./routes/letters'));
 
   app.use('/api', (req, res) => res.status(404).json({ error: 'Not found' }));
 

@@ -5,6 +5,9 @@ export const NAV = [
   { to: '/today', label: 'Today', icon: '◷', primary: true },
   { to: '/plan', label: 'Plan', icon: '☰', primary: true },
   { to: '/calendar', label: 'Calendar', icon: '▦', primary: true },
+  { to: '/reflection', label: 'Reflect', icon: '✎' },
+  { to: '/week', label: 'Week', icon: '◫' },
+  { to: '/letters', label: 'Letters', icon: '✉' },
   { to: '/stop-doing', label: 'Stop Doing', icon: '⊘' },
   { to: '/categories', label: 'Categories', icon: '◍' },
 ];

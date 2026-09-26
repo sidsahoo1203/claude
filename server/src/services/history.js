@@ -75,6 +75,7 @@ async function dailyStats(from, to, at = time.now()) {
       toward: a ? a.toward : 0,
       against: a ? a.against : 0,
       alignmentPct: logged ? Math.round((a.toward / logged) * 100) : null,
+      energySum: a ? a.energySum : 0,
       avgEnergy: logged ? Math.round((a.energySum / logged) * 10) / 10 : null,
       relapses: a ? a.relapses : 0,
       dominant: top ? { ...catById.get(String(top.category)), hours: top.hours } : null,

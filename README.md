@@ -17,8 +17,8 @@ full design (schemas and API routes).
 |---|---|---|
 | 1 | Setup, auth, categories, 24-hour logging grid (locking, notes, late window, timezone) | ✅ done |
 | 2 | Dashboard & goals, plan vs actual, calendar, Stop Doing list | ✅ done |
-| 3 | End-of-day reflection, weekly review, letters to future self | ⏳ next |
-| 4 | Analytics, export, backup script, PWA | — |
+| 3 | End-of-day reflection, weekly review, letters to future self | ✅ done |
+| 4 | Analytics, export, backup script, PWA | ⏳ next |
 
 ## Requirements
 
@@ -116,6 +116,12 @@ Hours from yesterday that are still inside the window appear under "Still open f
   wins. An hour's plan locks when the hour starts.
 - **Stop Doing**: items can be resolved (one-way) but never deleted. Linking a logged hour to an item
   records a relapse, including relapses after the item was resolved, which are flagged.
+- **Reflections**: one per day, for today, or for yesterday until `LOG_WINDOW_HOURS` after midnight.
+  Locked once saved; notes can be appended.
+- **Letters** unlock at 00:00 APP_TZ on their unlock date, which must be after today. Until then the
+  API returns only the title and dates; the body is excluded at the schema level (`select: false`).
+  Letters can never be edited or deleted.
+- **Weekly review** covers Monday–Sunday.
 
 ## API
 
@@ -142,3 +148,9 @@ returns 405**, because there are no edit or delete endpoints.
 | `GET /api/calendar?month=YYYY-MM` | Per day: hours logged, unaccounted hours, dominant category, alignment % |
 | `GET /api/stop-doing` · `GET /api/stop-doing/:id` | Items with relapse counts / one item with its relapse timeline |
 | `POST /api/stop-doing` · `POST /api/stop-doing/:id/resolve` | Add an item / resolve it (one-way) |
+| `GET /api/reflections/open` | The dates you can still write a reflection for, and whether each is written |
+| `GET /api/reflections?from&to` · `GET /api/reflections/:date` | Reflections in a date range / for one date |
+| `POST /api/reflections` · `POST /api/reflections/:date/notes` | Write one with `{ date, wentWell, didntGoWell, changeTomorrow }` / append a note |
+| `GET /api/reviews/week?start=YYYY-MM-DD` | Weekly review for the week containing `start`: totals, categories, each day, relapses, reflections |
+| `GET /api/letters` · `GET /api/letters/:id` | Titles and dates only; the body appears on `/:id` only once the letter is unlocked |
+| `POST /api/letters` | Seal a letter with `{ title, body, unlockDate }` |

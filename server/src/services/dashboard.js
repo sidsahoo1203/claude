@@ -1,4 +1,4 @@
-const { GoalEntry } = require('../models');
+const { GoalEntry, Reflection } = require('../models');
 const time = require('../lib/time');
 const { getDay } = require('./day');
 const { streaks } = require('./history');
@@ -11,8 +11,13 @@ async function latestGoals() {
 }
 
 async function dashboard(at = time.now()) {
-  const [goals, day, streak] = await Promise.all([latestGoals(), getDay(at.toISODate(), at), streaks(at)]);
-  return { ...goals, today: { date: day.date, ...day.summary }, streak };
+  const [goals, day, streak, reflected] = await Promise.all([
+    latestGoals(),
+    getDay(at.toISODate(), at),
+    streaks(at),
+    Reflection.exists({ date: at.toISODate() }),
+  ]);
+  return { ...goals, today: { date: day.date, ...day.summary, reflected: !!reflected }, streak };
 }
 
 module.exports = { dashboard, latestGoals };

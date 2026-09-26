@@ -12,6 +12,10 @@ import StopDoing from './pages/StopDoing';
 import StopDoingDetail from './pages/StopDoingDetail';
 import Categories from './pages/Categories';
 import More from './pages/More';
+import Reflection from './pages/Reflection';
+import WeeklyReview from './pages/WeeklyReview';
+import Letters from './pages/Letters';
+import Letter from './pages/Letter';
 
 export default function App() {
   const { status } = useAuth();
@@ -29,6 +33,11 @@ export default function App() {
           <Route path="stop-doing" element={<StopDoing />} />
           <Route path="stop-doing/:id" element={<StopDoingDetail />} />
           <Route path="categories" element={<Categories />} />
+          <Route path="reflection" element={<Reflection />} />
+          <Route path="reflection/:date" element={<Reflection />} />
+          <Route path="week" element={<WeeklyReview />} />
+          <Route path="letters" element={<Letters />} />
+          <Route path="letters/:id" element={<Letter />} />
           <Route path="more" element={<More />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>

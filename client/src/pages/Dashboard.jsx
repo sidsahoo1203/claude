@@ -113,6 +113,17 @@ export default function Dashboard() {
         <span className="muted">{formatDate(t.date)}</span>
       </div>
 
+      {!t.reflected && (
+        <Link to="/reflection" className="card glass prompt-card">
+          <span>✎</span>
+          <span className="stack tight">
+            <strong>Today's reflection</strong>
+            <span className="muted small">What went well, what didn't, one change for tomorrow.</span>
+          </span>
+          <span className="muted">›</span>
+        </Link>
+      )}
+
       <Statement kind="goal" current={goals.goal} history={goals.history.goal} onAdded={load} />
       <Statement kind="contribution" current={goals.contribution} history={goals.history.contribution} onAdded={load} />
 

@@ -4,4 +4,6 @@ module.exports = {
   StopDoingItem: require('./StopDoingItem'),
   GoalEntry: require('./GoalEntry'),
   PlanEntry: require('./PlanEntry'),
+  Reflection: require('./Reflection'),
+  Letter: require('./Letter'),
 };
