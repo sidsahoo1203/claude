@@ -3,6 +3,7 @@
   "private": true,
   "description": "Personal time logging & reflection app (monorepo: server/ + client/)",
   "scripts": {
+    "db": "npm --prefix server run db",
     "install:all": "npm --prefix server install && npm --prefix client install",
     "dev:server": "npm --prefix server run dev",
     "dev:client": "npm --prefix client run dev",

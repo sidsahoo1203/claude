@@ -23,7 +23,11 @@ full design (schemas and API routes).
 ## Requirements
 
 - Node.js 20+
-- MongoDB 6+ running locally on `mongodb://localhost:27017`, **or** a MongoDB Atlas connection string
+- A MongoDB database, one of:
+  - **Nothing to install:** `npm run db` starts a local MongoDB for development (works in GitHub
+    Codespaces). The first run downloads it (~100 MB), and data is kept in `.mongo-data/`.
+  - MongoDB 6+ installed locally on `mongodb://localhost:27017`
+  - A MongoDB Atlas connection string in `server/.env`
 
 ## Setup
 
@@ -57,12 +61,20 @@ Changing the password with `npm run set-password` logs out every existing sessio
 
 ## Run (development)
 
-Two terminals:
+Three terminals (skip the first if you already run MongoDB or use Atlas):
 
 ```bash
+npm run db           # local MongoDB on 127.0.0.1:27017 (keep it running)
 npm run dev:server   # API on http://localhost:4000 (auto-restarts)
 npm run dev:client   # UI on http://localhost:5173 (proxies /api to the server)
 ```
+
+If the server says **"Could not connect to MongoDB"** (or Vite logs `http proxy error … ECONNREFUSED`),
+the database isn't running. Start `npm run db`, then save any server file (or restart
+`dev:server`) and it reconnects.
+
+**GitHub Codespaces:** the same three commands work. Open the forwarded port **5173** from the
+*Ports* tab. Only 5173 needs to be opened, because the API is reached through Vite's proxy.
 
 Open http://localhost:5173 and log in. To use it from your phone on the same Wi-Fi, open
 `http://<your-computer-ip>:5173` and set `CLIENT_ORIGIN` to that address.

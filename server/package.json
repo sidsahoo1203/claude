@@ -9,6 +9,7 @@
   },
   "scripts": {
     "start": "node src/index.js",
+    "db": "node scripts/dev-db.js",
     "dev": "node --watch src/index.js",
     "test": "jest --runInBand",
     "set-password": "node scripts/set-password.js",

@@ -5,3 +5,4 @@ coverage/
 backups/*
 !backups/.gitkeep
 .DS_Store
+.mongo-data/
