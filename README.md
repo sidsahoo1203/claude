@@ -62,20 +62,23 @@ Changing the password with `npm run set-password` logs out every existing sessio
 
 ## Run (development)
 
-Three terminals (skip the first if you already run MongoDB or use Atlas):
+One command starts everything (local MongoDB, API and web client) with labelled output:
 
 ```bash
-npm run db           # local MongoDB on 127.0.0.1:27017 (keep it running)
-npm run dev:server   # API on http://localhost:4000 (auto-restarts)
-npm run dev:client   # UI on http://localhost:5173 (proxies /api to the server)
+npm run dev          # → http://localhost:5173   (Ctrl+C stops all of it)
 ```
 
-If the server says **"Could not connect to MongoDB"** (or Vite logs `http proxy error … ECONNREFUSED`),
-the database isn't running. Start `npm run db`, then save any server file (or restart
-`dev:server`) and it reconnects.
+It starts a local database unless one is already running on port 27017, or `server/.env` points at a
+remote one (Atlas). The first run downloads MongoDB (~100 MB). If setup is incomplete, it tells you
+what to run (`npm run install:all` or `npm run set-password`).
 
-**GitHub Codespaces:** the same three commands work. Open the forwarded port **5173** from the
-*Ports* tab. Only 5173 needs to be opened, because the API is reached through Vite's proxy.
+**GitHub Codespaces:** run `npm run dev`, then open port **5173** from the *Ports* tab. Only 5173
+needs to be open, because the API is reached through Vite's proxy. When a Codespace stops, just run
+`npm run dev` again; your data stays in `.mongo-data/`.
+
+To run the parts separately, use three terminals: `npm run db`, `npm run dev:server` and
+`npm run dev:client`. If the server says **"Could not connect to MongoDB"**, the database isn't
+running.
 
 Open http://localhost:5173 and log in. To use it from your phone on the same Wi-Fi, open
 `http://<your-computer-ip>:5173` and set `CLIENT_ORIGIN` to that address.
@@ -120,11 +123,12 @@ One-time setup:
 4. **Point the client at it:** on GitHub, go to **Settings → Secrets and variables → Actions → Variables**
    and add a new repository variable `API_URL` = `https://<your-service>.onrender.com` (no trailing slash).
 5. **Turn on Pages:** go to **Settings → Pages → Build and deployment → Source: GitHub Actions**.
-6. Re-run the **Deploy client to GitHub Pages** workflow (Actions tab), or push to `main`.
+6. Run the **Deploy client to GitHub Pages** workflow: Actions tab → select it → **Run workflow**.
    Then open `https://sidsahoo1203.github.io/claude/`.
 
 Notes:
-- Every push to `main` runs the server tests, then builds and deploys the client.
+- Deploying is **manual**: nothing goes live until you run that workflow. Every push to `main` only
+  runs **CI** (`.github/workflows/ci.yml`: server tests plus a client build check).
 - Render's free tier sleeps after ~15 minutes idle, so the first request after that takes ~30–60s.
 - Until `API_URL` is set, the Pages site shows "This page has no API server connected yet".
 - The phone app install works from the Pages URL, because it's HTTPS.

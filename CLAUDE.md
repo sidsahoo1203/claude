@@ -55,9 +55,12 @@ only added to.
 
 ## Deployment
 
-- Branch: work directly on `main` (the only branch). Pushing `main` runs
-  `.github/workflows/pages.yml`: server tests → client build (`VITE_BASE=/<repo>/`,
-  `VITE_API_URL=${{ vars.API_URL }}`, `404.html` SPA fallback) → GitHub Pages.
+- Branch: work directly on `main` (the only branch). Pushing `main` runs only
+  `.github/workflows/ci.yml` (server tests + client build).
+- Hosting is on hold until the app is finished; the owner runs it locally with `npm run dev`
+  (`scripts/dev.js`: local MongoDB + API + Vite, Ctrl+C stops all). Deploying is manual:
+  `.github/workflows/pages.yml` (workflow_dispatch only) → server tests → client build
+  (`VITE_BASE=/<repo>/`, `VITE_API_URL=${{ vars.API_URL }}`, `404.html` SPA fallback) → GitHub Pages.
 - The API can't run on Pages; it's deployed separately (`render.yaml`, Atlas) with
   `COOKIE_SAMESITE=none` and `CLIENT_ORIGIN=https://sidsahoo1203.github.io`.
 - Client code must not hardcode `/api` or root-absolute paths: use `API_BASE` from `api.js` and
@@ -67,7 +70,9 @@ only added to.
 
 ```
 CLAUDE.md, README.md, docs/PLAN.md    principles, setup, original design plan
-.github/workflows/pages.yml           test + build + deploy client to GitHub Pages
+.github/workflows/ci.yml              tests + client build on every push
+.github/workflows/pages.yml           manual: test + build + deploy client to GitHub Pages
+scripts/dev.js                        npm run dev: local MongoDB + API + client together
 render.yaml                           Render blueprint for the API
 backups/                              mongodump output (npm run backup)
 server/                               Express + Mongoose API (CommonJS)

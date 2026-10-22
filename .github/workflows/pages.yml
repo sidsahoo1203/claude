@@ -1,11 +1,10 @@
-# Builds the React client and publishes it to GitHub Pages on every push to main.
+# Builds the React client and publishes it to GitHub Pages. Manual only: deploy when you're ready
+# (Actions → "Deploy client to GitHub Pages" → Run workflow). Pushes only run ci.yml.
 # One-time setup: Settings → Pages → Source: "GitHub Actions", and
 # Settings → Secrets and variables → Actions → Variables → API_URL = your API's URL.
 name: Deploy client to GitHub Pages
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
