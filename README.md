@@ -60,6 +60,62 @@ cp client/.env.example client/.env
 
 Changing the password with `npm run set-password` logs out every existing session.
 
+## Run it on your own PC (with your own MongoDB)
+
+Everything runs on `localhost`, and your data stays in your own MongoDB.
+
+1. **Install** [Node.js 20+](https://nodejs.org) (LTS), [Git](https://git-scm.com), and
+   [MongoDB Community Server](https://www.mongodb.com/try/download/community). On Windows, keep
+   "Install MongoDB as a Service" ticked so it runs on `localhost:27017` automatically.
+   [MongoDB Compass](https://www.mongodb.com/products/compass) is handy for looking at the data.
+2. **Get the code** (pick any folder, e.g. `C:\Users\<you>\Projects` on Windows or `~/Projects`
+   on macOS):
+   ```bash
+   git clone https://github.com/sidsahoo1203/claude.git
+   cd claude
+   npm run install:all
+   ```
+3. **Set your password.** This creates `server/.env`, which already points at
+   `mongodb://localhost:27017/timelog`:
+   ```bash
+   npm run set-password
+   ```
+4. **Start it:**
+   ```bash
+   npm run dev
+   ```
+   `npm run dev` sees your MongoDB on port 27017 and uses it. Open **http://localhost:5173** and log in.
+   Ctrl+C stops the app (your MongoDB service keeps running).
+
+Where things live on your PC:
+
+| What | Where |
+|---|---|
+| The code | the `claude` folder you cloned into |
+| Your settings (password hash, DB address, port) | `claude/server/.env` (never committed) |
+| Your data | inside MongoDB, database **`timelog`**. Browse it in Compass at `mongodb://localhost:27017`. The files are in MongoDB's data folder (Windows default: `C:\Program Files\MongoDB\Server\<version>\data`) |
+| Backups (`npm run backup`, needs MongoDB Database Tools) | `claude/backups/<date_time>/` |
+| JSON / CSV exports from the app | your browser's Downloads folder |
+| Postman collection | `claude/docs/postman/` |
+
+To get my latest changes later: `git pull` then `npm run install:all`.
+
+## Postman
+
+`docs/postman/` contains a collection with every endpoint (53 requests, in run order) and a local
+environment.
+
+1. In Postman: **Import** → select both files in `docs/postman/`.
+2. Top right: select the **Hourglass Local** environment, then set `password` to your app password.
+3. With `npm run dev` running, open the collection and use **Run collection**, or send requests one
+   by one from the top.
+
+It logs you in, keeps the session cookie, adds the required `X-Requested-With: hourglass` header to
+every write, and saves the IDs and dates later requests need. The last folder shows the permanence
+rules: edits and deletes return 405, and re-logging an hour returns 409.
+Keep in mind that it creates real data in your database: a logged hour, a goal, plans, a Stop Doing
+item, a reflection and a letter. They're permanent too.
+
 ## Run (development)
 
 One command starts everything (local MongoDB, API and web client) with labelled output:

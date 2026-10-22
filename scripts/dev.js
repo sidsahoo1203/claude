@@ -142,7 +142,8 @@ async function main() {
 
   run('api', npmIn('server', 'dev'));
   run('web', npmIn('client', 'dev'));
-  if (await waitForPort(5173, 60000)) {
+  const apiPort = Number(env.PORT || 4000);
+  if ((await waitForPort(apiPort, 60000)) && (await waitForPort(5173, 60000))) {
     log('dev', '\x1b[1mReady → http://localhost:5173\x1b[0m  (in Codespaces: Ports tab → 5173). Ctrl+C stops everything.');
   }
 }

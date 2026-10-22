@@ -70,6 +70,8 @@ only added to.
 
 ```
 CLAUDE.md, README.md, docs/PLAN.md    principles, setup, original design plan
+docs/postman/                         Postman collection (every endpoint, run order) + local env;
+                                      add new endpoints here too
 .github/workflows/ci.yml              tests + client build on every push
 .github/workflows/pages.yml           manual: test + build + deploy client to GitHub Pages
 scripts/dev.js                        npm run dev: local MongoDB + API + client together

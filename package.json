@@ -9,7 +9,7 @@
     "dev:server": "npm --prefix server run dev",
     "dev:client": "npm --prefix client run dev",
     "build": "npm --prefix client run build",
-    "start": "NODE_ENV=production npm --prefix server start",
+    "start": "node -e \"process.env.NODE_ENV='production';require('./server/src/index.js')\"",
     "test": "npm --prefix server test",
     "set-password": "npm --prefix server run set-password",
     "backup": "npm --prefix server run backup"
